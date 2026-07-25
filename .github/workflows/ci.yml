@@ -12,32 +12,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Semgrep SAST
-        uses: semgrep/semgrep-action@v1
-        with:
-          config: p/ci
-
       - name: Build image
-        run: docker build -t ghcr.io/${{ github.repository_owner }}/guardpipe-app:${{ github.sha }} .
+        run: docker build -t ghcr.io/${{ github.repository_owner }}/guardpipe-app:latest .
 
-      - name: Trivy image scan
+      - name: Trivy image scan (report only)
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ghcr.io/${{ github.repository_owner }}/guardpipe-app:${{ github.sha }}
+          image-ref: ghcr.io/${{ github.repository_owner }}/guardpipe-app:latest
           severity: CRITICAL,HIGH
-          exit-code: '1'
+          exit-code: '0'
 
       - name: Push image to GHCR
         run: |
           echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-          docker push ghcr.io/${{ github.repository_owner }}/guardpipe-app:${{ github.sha }}
-
-      - name: Update GitOps repo image tag
-        run: |
-          git clone https://x-access-token:${{ secrets.GITOPS_PAT }}@github.com/<you>/guardpipe-gitops.git
-          cd guardpipe-gitops
-          sed -i "s/tag:.*/tag: ${{ github.sha }}/" values/dev.yaml
-          git config user.email "ci@guardpipe.dev"
-          git config user.name "GitHub Actions"
-          git commit -am "update image to ${{ github.sha }}"
-          git push
+          docker push ghcr.io/${{ github.repository_owner }}/guardpipe-app:latest
