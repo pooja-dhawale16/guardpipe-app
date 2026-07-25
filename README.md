@@ -1,4 +1,4 @@
-cat <<'EOF' > README.md
+
 # GuardPipe App
 
 A hardened, containerized REST API demonstrating a full DevSecOps CI/CD pipeline — from code commit to a security-scanned, production-style container image.
@@ -57,4 +57,4 @@ Every push to `main` triggers:
 ## Related repo
 
 Deployment configuration and ArgoCD setup: [guardpipe-gitops](https://github.com/pooja-dhawale16/guardpipe-gitops)
-EOF
+
